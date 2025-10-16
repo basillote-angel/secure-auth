@@ -43,18 +43,22 @@ class RegisteredUserController extends Controller
             'password.confirmed' => 'Password confirmation does not match.',
         ]);
 
-        $salt = random_bytes(32);
+        // Normalize email to lowercase to avoid case-sensitivity login issues
+        $validated['email'] = \Illuminate\Support\Str::lower(trim($validated['email']));
+
         $pepper = (string) env('APP_PEPPER', '');
-        $pre = hash_hmac('sha256', $salt . $validated['password'], $pepper, true);
+        $userSalt = random_bytes(32);
+        $saltB64 = base64_encode($userSalt);
+
+        // Prehash with per-user salt and server-side pepper
+        $pre = hash_hmac('sha256', $userSalt . $validated['password'], $pepper, true);
         $hashed = password_hash($pre, PASSWORD_ARGON2ID);
 
         $user = User::create([
-            // Store username as display name to satisfy NOT NULL name column
-            'name' => $validated['username'],
             'username' => $validated['username'],
             'email' => $validated['email'],
             'password' => $hashed,
-            'salt' => base64_encode($salt),
+            'salt' => $saltB64,
         ]);
 
         event(new Registered($user));

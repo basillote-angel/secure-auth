@@ -23,11 +23,18 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $userSalt = random_bytes(32);
+        $saltB64 = base64_encode($userSalt);
+        $pepper = (string) env('APP_PEPPER', '');
+        $pre = hash_hmac('sha256', $userSalt . 'password', $pepper, true);
+        $hash = password_hash($pre, PASSWORD_ARGON2ID);
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'username' => fake()->unique()->userName(),
+            'email' => Str::lower(fake()->unique()->safeEmail()),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => $hash,
+            'salt' => $saltB64,
             'remember_token' => Str::random(10),
         ];
     }

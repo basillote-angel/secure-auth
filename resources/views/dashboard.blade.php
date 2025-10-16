@@ -1,5 +1,5 @@
 <x-app-layout>
-    @php $name = auth()->user()->name ?? 'User'; @endphp
+    @php $name = auth()->user()->username ?? 'User'; @endphp
 
     <div class="mb-3 d-flex align-items-center justify-content-between">
         <div id="greet" class="greeting d-inline-flex align-items-center">

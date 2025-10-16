@@ -53,9 +53,12 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $identifier = (string) $this->string('email');
+        $identifier = trim((string) $this->string('email'));
         $password = (string) $this->string('password');
         $isEmail = filter_var($identifier, FILTER_VALIDATE_EMAIL) !== false;
+        if ($isEmail) {
+            $identifier = Str::lower($identifier);
+        }
         $credentials = $isEmail
             ? ['email' => $identifier, 'password' => $password]
             : ['username' => $identifier, 'password' => $password];

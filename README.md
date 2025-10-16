@@ -1,3 +1,58 @@
+Secure Lost & Found — Laravel 12
+
+A secure authentication baseline for a Lost & Found website. Users can register and log in (email or username), with strong password policy, peppered+salted Argon2id hashing, and a real‑time strength meter.
+
+Features
+- Registration and Login (email or username)
+- Strong password policy (12+ chars, upper, lower, digit, symbol)
+- Real‑time strength meter (Weak / Medium / Strong)
+- Secure storage: per‑user random salt + server‑side pepper (APP_PEPPER) + Argon2id
+- CSRF protection, session regeneration on login, rate limiting
+- Clean UI (Bootstrap) with responsive two‑column auth pages
+
+Quick start
+1) Requirements: PHP 8.2+, Composer, MySQL (XAMPP ok)
+2) Setup
+```
+cd secure-auth
+cp .env.example .env
+php artisan key:generate
+# Edit .env for DB_* and set a long random APP_PEPPER
+composer install
+php artisan migrate
+php artisan serve
+```
+Visit http://127.0.0.1:8000
+
+Security design
+- On registration:
+  - Generate a per‑user random salt (32 bytes)
+  - Prehash: HMAC‑SHA256(salt || password, APP_PEPPER) → binary
+  - Hash with Argon2id and store (password, salt)
+- On login:
+  - Repeat prehash with stored salt and APP_PEPPER
+  - password_verify against Argon2id
+- Why: Pepper keeps the prehash secret server‑side; salt defeats rainbow tables; Argon2id offers memory‑hard resistance to GPU cracking.
+
+Password policy
+- Required: 12+ characters, at least one uppercase, lowercase, digit, and special symbol
+- UI: the meter hides on empty and only shows “Strong” when all rules pass
+- Server: enforced by App\Rules\StrongPassword
+
+Key files
+- app/Providers/PepperAuthServiceProvider.php — Custom Eloquent user provider with peppered prehash + Argon2id verify
+- app/Http/Controllers/Auth/RegisteredUserController.php — Registration flow (salt + pepper + Argon2id)
+- app/Http/Requests/Auth/LoginRequest.php — Email/username detection; tailored messages
+- app/Rules/StrongPassword.php — Server‑side policy enforcement
+- resources/views/auth/*.blade.php — Auth pages with responsive layout and strength meter
+
+Notes
+- Keep .env and APP_PEPPER out of source control
+- If you change hashing parameters, ensure both registration and login paths are updated
+- Consider enabling email verification/MFA for production
+
+License
+For educational purposes.
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

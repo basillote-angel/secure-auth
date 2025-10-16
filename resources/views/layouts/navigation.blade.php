@@ -17,8 +17,8 @@
 				<li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
 				{{-- Future: Items list, Report found, Report lost --}}
 			</ul>
-			<div class="d-flex align-items-center gap-3">
-				<span class="text-muted small d-none d-md-inline">{{ Auth::user()->name ?? '' }}</span>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted small d-none d-md-inline">{{ Auth::user()->username ?? '' }}</span>
 				<form method="POST" action="{{ route('logout') }}">
 					@csrf
 					<button class="btn btn-outline-dark btn-sm" type="submit">

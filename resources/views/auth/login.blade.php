@@ -38,11 +38,12 @@
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     </div>
 
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <label class="form-check-label d-flex align-items-center gap-2">
-                            <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
-                            <span class="small">{{ __('Remember me') }}</span>
-                        </label>
+                    <div class="form-check mt-2">
+                        <input id="showPasswordLogin" class="form-check-input" type="checkbox">
+                        <label for="showPasswordLogin" class="form-check-label small">Show password</label>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-end mb-3">
                         @if (Route::has('password.request'))
                             <a class="text-decoration-none small link-accent" href="{{ route('password.request') }}">{{ __('Forgot password?') }}</a>
                         @endif
@@ -83,6 +84,12 @@
                 e.preventDefault();
                 alert('Please fill in both email/username and password.');
             }
+        });
+
+        const showPasswordCheckbox = document.getElementById('showPasswordLogin');
+        showPasswordCheckbox?.addEventListener('change', function(){
+            const passwordField = document.getElementById('password');
+            if (passwordField) passwordField.type = this.checked ? 'text' : 'password';
         });
     })();
     </script>

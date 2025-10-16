@@ -63,6 +63,11 @@
                     
                 </div>
 
+                <div class="form-check mt-2">
+                    <input id="showPasswordRegister" class="form-check-input" type="checkbox">
+                    <label for="showPasswordRegister" class="form-check-label small">Show passwords</label>
+                </div>
+
         <script>
         (function(){
             const pwd = document.getElementById('password');
@@ -150,6 +155,15 @@
                 e.preventDefault();
                 alert('Passwords do not match.');
             }
+        });
+
+        const showPasswordCheckbox = document.getElementById('showPasswordRegister');
+        const passwordField = document.getElementById('password');
+        const confirmField = document.getElementById('password_confirmation');
+        showPasswordCheckbox?.addEventListener('change', function(){
+            const newType = this.checked ? 'text' : 'password';
+            if (passwordField) passwordField.type = newType;
+            if (confirmField) confirmField.type = newType;
         });
     })();
     </script>
